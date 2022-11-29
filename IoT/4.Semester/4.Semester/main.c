@@ -20,6 +20,9 @@
 #include <lora_driver.h>
 #include <status_leds.h>
 
+// including CO2 driver header 
+#include <mh_z19.h>
+
 // define two Tasks
 void task1( void *pvParameters );
 void task2( void *pvParameters );
@@ -66,7 +69,7 @@ void create_tasks_and_semaphores(void)
 void task1( void *pvParameters )
 {
 	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 500/portTICK_PERIOD_MS; // 500 ms
+	const TickType_t xFrequency = 5000/portTICK_PERIOD_MS; // 500 ms
 
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
@@ -83,7 +86,7 @@ void task1( void *pvParameters )
 void task2( void *pvParameters )
 {
 	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 1000/portTICK_PERIOD_MS; // 1000 ms
+	const TickType_t xFrequency = 10000/portTICK_PERIOD_MS; // 1000 ms
 
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
@@ -114,6 +117,11 @@ void initialiseSystem()
 	lora_driver_initialise(1, NULL);
 	// Create LoRaWAN task and start it up with priority 3
 	lora_handler_initialise(3);
+	
+	// Initialization of CO2 driver
+	// The parameter is the USART port the MH-Z19 sensor is connected to - in this case USART3
+	mh_z19_initialise(ser_USART3);
+	
 }
 
 /*-----------------------------------------------------------*/
@@ -122,7 +130,6 @@ int main(void)
 	initialiseSystem(); // Must be done as the very first thing!!
 	printf("Program Started!!\n");
 	vTaskStartScheduler(); // Initialise and run the freeRTOS scheduler. Execution should never return from here.
-
 	/* Replace with your application code */
 	while (1)
 	{
