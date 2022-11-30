@@ -20,8 +20,7 @@
 #include <lora_driver.h>
 #include <status_leds.h>
 
-// including CO2 driver header 
-#include <mh_z19.h>
+#include "CO2Manager.h"
 
 // define two Tasks
 void task1( void *pvParameters );
@@ -93,6 +92,9 @@ void task2( void *pvParameters )
 
 	for(;;)
 	{
+		// CO2 measuring - here, just for testing purposes. Later on we'll find a better place for it.
+		performCO2Measuring();
+		
 		xTaskDelayUntil( &xLastWakeTime, xFrequency );
 		puts("Task2"); // stdio functions are not reentrant - Should normally be protected by MUTEX
 		PORTA ^= _BV(PA7);
@@ -118,10 +120,8 @@ void initialiseSystem()
 	// Create LoRaWAN task and start it up with priority 3
 	lora_handler_initialise(3);
 	
-	// Initialization of CO2 driver
-	// The parameter is the USART port the MH-Z19 sensor is connected to - in this case USART3
-	mh_z19_initialise(ser_USART3);
-	
+	// initializing CO2 manager
+	initializeCO2Manager();
 }
 
 /*-----------------------------------------------------------*/
@@ -129,10 +129,12 @@ int main(void)
 {
 	initialiseSystem(); // Must be done as the very first thing!!
 	printf("Program Started!!\n");
-	vTaskStartScheduler(); // Initialise and run the freeRTOS scheduler. Execution should never return from here.
+	vTaskStartScheduler(); // Initialize and run the freeRTOS scheduler. Execution should never return from here.
 	/* Replace with your application code */
 	while (1)
 	{
 	}
 }
+
+
 
