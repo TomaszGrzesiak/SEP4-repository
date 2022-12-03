@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{51A28C02-6469-4991-AB6D-C31BF6FC6E2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfcData", "EfcData\EfcData.csproj", "{E12C6E7C-71E5-4013-BCB2-03A1863BBADB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MushroomAPI", "MushroomAPI\MushroomAPI.csproj", "{3404DCBF-0D68-44E1-BF8B-54728099946E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51A28C02-6469-4991-AB6D-C31BF6FC6E2B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{51A28C02-6469-4991-AB6D-C31BF6FC6E2B}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{51A28C02-6469-4991-AB6D-C31BF6FC6E2B}.Release|Any CPU.Deploy.0 = Debug|Any CPU
+		{E12C6E7C-71E5-4013-BCB2-03A1863BBADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12C6E7C-71E5-4013-BCB2-03A1863BBADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E12C6E7C-71E5-4013-BCB2-03A1863BBADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E12C6E7C-71E5-4013-BCB2-03A1863BBADB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3404DCBF-0D68-44E1-BF8B-54728099946E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3404DCBF-0D68-44E1-BF8B-54728099946E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3404DCBF-0D68-44E1-BF8B-54728099946E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3404DCBF-0D68-44E1-BF8B-54728099946E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
