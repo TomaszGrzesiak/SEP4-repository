@@ -2,7 +2,7 @@
  * CO2Manager.c
  *
  * Created: 30-11-2022 00:02:15
- *  Author: grzes
+ *  Author: Tomasz Grzesiak
  */ 
 #include "CO2Manager.h"
 // including CO2 driver header

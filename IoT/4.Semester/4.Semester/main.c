@@ -68,7 +68,7 @@ void create_tasks_and_semaphores(void)
 void task1( void *pvParameters )
 {
 	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 5000/portTICK_PERIOD_MS; // 500 ms
+	const TickType_t xFrequency = 5000/portTICK_PERIOD_MS; // 5000 ms
 
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
@@ -76,7 +76,7 @@ void task1( void *pvParameters )
 	for(;;)
 	{
 		xTaskDelayUntil( &xLastWakeTime, xFrequency );
-		puts("Task1"); // stdio functions are not reentrant - Should normally be protected by MUTEX
+		puts("Task1 5 seconds gap."); // stdio functions are not reentrant - Should normally be protected by MUTEX
 		PORTA ^= _BV(PA0);
 	}
 }
@@ -85,7 +85,7 @@ void task1( void *pvParameters )
 void task2( void *pvParameters )
 {
 	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 10000/portTICK_PERIOD_MS; // 1000 ms
+	const TickType_t xFrequency = 10000/portTICK_PERIOD_MS; // 10000 ms
 
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
@@ -96,7 +96,7 @@ void task2( void *pvParameters )
 		performCO2Measuring();
 		
 		xTaskDelayUntil( &xLastWakeTime, xFrequency );
-		puts("Task2"); // stdio functions are not reentrant - Should normally be protected by MUTEX
+		puts("Task2 10 seconds gap"); // stdio functions are not reentrant - Should normally be protected by MUTEX
 		PORTA ^= _BV(PA7);
 	}
 }
@@ -115,10 +115,13 @@ void initialiseSystem()
 	// vvvvvvvvvvvvvvvvv BELOW IS LoRaWAN initialisation vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 	// Status Leds driver
 	status_leds_initialise(5); // Priority 5 for internal task
-	// Initialise the LoRaWAN driver without down-link buffer
-	lora_driver_initialise(1, NULL);
+	
+	// The two lines below are copy-pasted from the official Guide.
+	MessageBufferHandle_t downLinkMessageBufferHandle = xMessageBufferCreate(sizeof(lora_driver_payload_t)*2); // Here I make room for two downlink messages in the message buffer
+	lora_driver_initialise(ser_USART1, downLinkMessageBufferHandle); // The parameter is the USART port the RN2483 module is connected to - in this case USART1 - here no message buffer for down-link messages are defined
+	
 	// Create LoRaWAN task and start it up with priority 3
-	lora_handler_initialise(3);
+	lora_handler_initialise(3, downLinkMessageBufferHandle);
 	
 	// initializing CO2 manager
 	initializeCO2Manager();
