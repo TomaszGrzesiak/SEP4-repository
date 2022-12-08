@@ -8,14 +8,14 @@
 // including CO2 driver header
 #include <mh_z19.h>
 #include <stdio.h>
+#include "definitions.h"
 
-uint16_t CO2level;
 mh_z19_returnCode_t rc;
 
 void myCo2CallBack(uint16_t ppm)
 {
 	printf("Callback CO2 Sensor readings: %d\n",ppm);
-	CO2level = ppm;
+	data.CO2level = ppm;
 }
 
 void initializeCO2Manager() {
@@ -32,10 +32,7 @@ void performCO2Measuring() {
 	}
 	else
 	{
-		printf("CO2 Sensor readings: %d\n",CO2level);
+		printf("CO2 Sensor readings: %d\n",data.CO2level);
 	}
 }
 
-uint16_t getCO2ppm() {
-	return CO2level;
-}

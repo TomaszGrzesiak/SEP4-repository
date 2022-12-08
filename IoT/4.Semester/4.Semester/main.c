@@ -23,6 +23,7 @@
 #include "CO2Manager.h"
 #include "definitions.h" // contains a semaphore and the current values from the sensors
 #include "TemperatureHumidityManager.h"
+#include <display_7seg.h> // 7-segment Display Driver. A real display on the IoT device (4 digits only)
 
 // define two Tasks
 void task1( void *pvParameters );
@@ -135,6 +136,10 @@ void initialiseSystem()
 	// initializing CO2 manager
 	initializeCO2Manager();
 	
+	// Initialization and powering up a 7-segment display on the board. Here the call back function is not needed
+	display_7seg_initialise(NULL);
+	display_7seg_powerUp();
+	
 	// initializing temperature humidity driver
 	if ( HIH8120_OK == hih8120_initialise() )
 	{
@@ -148,6 +153,8 @@ int main(void)
 {
 	initialiseSystem(); // Must be done as the very first thing!!
 	printf("Program Started!!\n");
+	// showing a Pi number on the 7-segment display on the board (as an example).
+	display_7seg_display(3.14159265359, 2);
 	vTaskStartScheduler(); // Initialize and run the freeRTOS scheduler. Execution should never return from here.
 	/* Replace with your application code */
 	while (1)

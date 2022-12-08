@@ -41,6 +41,7 @@ void temperatureHumiditySensorTask(void* pvParameters){
 		data.humidity = hih8120_getHumidity();
 		data.temperature = hih8120_getTemperature();
 		printf("Hum: %d  Temp: %d\n", data.humidity, data.temperature);
+		display_7seg_display((float)data.temperature, 0);
 		xSemaphoreGive(xSemaphore);
 	}
 }

@@ -149,16 +149,16 @@ void lora_handler_task( void *pvParameters )
 		printf(">> attempting to send and receive data each %d seconds...\n",timeInterval);
 				
 		// Some dummy payload
-		hum = 51914; // Dummy humidity HEX: CACA
-		temp = 48316; // Dummy temp HEX: BCBC
-		co2_ppm = getCO2ppm(); // no longer so dummy CO2
+		hum = data.humidity;
+		temp = data.temperature;
+		co2_ppm = data.CO2level; // no longer so dummy CO2
 		light = 43947; // Dummy light HEX: ABAB
 		
 
-		_uplink_payload.bytes[0] = data.humidity >> 8;
-		_uplink_payload.bytes[1] = data.humidity & 0xFF;
-		_uplink_payload.bytes[2] = data.temperature >> 8;
-		_uplink_payload.bytes[3] = data.temperature & 0xFF;
+		_uplink_payload.bytes[0] = hum >> 8;
+		_uplink_payload.bytes[1] = hum & 0xFF;
+		_uplink_payload.bytes[2] = temp >> 8;
+		_uplink_payload.bytes[3] = temp & 0xFF;
 		_uplink_payload.bytes[4] = co2_ppm >> 8;
 		_uplink_payload.bytes[5] = co2_ppm & 0xFF;
 		_uplink_payload.bytes[6] = light >> 8;
