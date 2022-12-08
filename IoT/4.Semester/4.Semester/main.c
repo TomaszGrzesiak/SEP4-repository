@@ -21,13 +21,13 @@
 #include <status_leds.h>
 
 #include "CO2Manager.h"
+#include "definitions.h" // contains a semaphore and the current values from the sensors
+#include "TemperatureHumidityManager.h"
 
 // define two Tasks
 void task1( void *pvParameters );
 void task2( void *pvParameters );
 
-// define semaphore handle
-SemaphoreHandle_t xTestSemaphore;
 
 // Prototype for LoRaWAN handler
 void _handler_initialise(UBaseType_t _handler_task_priority);
@@ -38,12 +38,12 @@ void create_tasks_and_semaphores(void)
 	// Semaphores are useful to stop a Task proceeding, where it should be paused to wait,
 	// because it is sharing a resource, such as the Serial port.
 	// Semaphores should only be used whilst the scheduler is running, but we can set it up here.
-	if ( xTestSemaphore == NULL )  // Check to confirm that the Semaphore has not already been created.
+	if ( xSemaphore == NULL )  // Check to confirm that the Semaphore has not already been created.
 	{
-		xTestSemaphore = xSemaphoreCreateMutex();  // Create a mutex semaphore.
-		if ( ( xTestSemaphore ) != NULL )
+		xSemaphore = xSemaphoreCreateMutex();  // Create a mutex semaphore.
+		if ( ( xSemaphore ) != NULL )
 		{
-			xSemaphoreGive( ( xTestSemaphore ) );  // Make the mutex available for use, by initially "Giving" the Semaphore.
+			xSemaphoreGive( ( xSemaphore ) );  // Make the mutex available for use, by initially "Giving" the Semaphore.
 		}
 	}
 
@@ -58,6 +58,14 @@ void create_tasks_and_semaphores(void)
 	xTaskCreate(
 	task2
 	,  "Task2"  // A name just for humans
+	,  configMINIMAL_STACK_SIZE  // This stack size can be checked & adjusted by reading the Stack Highwater
+	,  NULL
+	,  1  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+	,  NULL );
+	
+	xTaskCreate(
+	temperatureHumiditySensorTask // the task body is in TemperatureHumidityManager.c
+	,  "Grabbing temperature and humidity values from the sensors"  // A name just for humans
 	,  configMINIMAL_STACK_SIZE  // This stack size can be checked & adjusted by reading the Stack Highwater
 	,  NULL
 	,  1  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
@@ -101,6 +109,7 @@ void task2( void *pvParameters )
 	}
 }
 
+
 /*-----------------------------------------------------------*/
 void initialiseSystem()
 {
@@ -125,6 +134,13 @@ void initialiseSystem()
 	
 	// initializing CO2 manager
 	initializeCO2Manager();
+	
+	// initializing temperature humidity driver
+	if ( HIH8120_OK == hih8120_initialise() )
+	{
+       // Driver initialised OK
+       // Always check what hih8120_initialise() returns
+	}
 }
 
 /*-----------------------------------------------------------*/
