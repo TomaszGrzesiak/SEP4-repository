@@ -13,10 +13,25 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import dk.via.sep4and.MesurementService.MeasurementService;
+import dk.via.sep4and.Model.Measurement;
 import dk.via.sep4and.databinding.ActivityMainBinding;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +58,68 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    private void executeSearch() {
+        final String apiKey = "Mushroom-farm";
+
+        //create Retrofit instance
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public okhttp3.Response intercept(Chain chain) throws IOException {
+                        Request original = chain.request();
+                        HttpUrl httpUrl = original.url();
+
+                        HttpUrl newHttpUrl = httpUrl.newBuilder()
+                                .addQueryParameter("api_key", apiKey)
+                                .build();
+
+                        Request.Builder requestBuilder = original.newBuilder();
+
+                        Request request = requestBuilder.build();
+                        return chain.proceed(request);
+                    }
+                })
+                .build();
+
+        //get client
+
+
+        //query map
+        Map<String, Object> queryMap = new HashMap<>();
+
+        queryMap.put("id", 4);
+        queryMap.put("co2", 4.5);
+        queryMap.put("humidity", 4.5);
+        queryMap.put("temperature", 4.5);
+        queryMap.put("timestamp", "2021-05-05T12:00:00");
+
+        MeasurementService measurementService = new Retrofit.Builder()
+                .baseUrl("https://sep4.azurewebsites.net/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build()
+                .create(MeasurementService.class);
+
+        Call<ResponseBody> call = measurementService.getMeasurements(4, 4.5, 4.5, 4.5, "2021-05-05T12:00:00");
+
+        call.enqueue(new retrofit2.Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    System.out.println("Success");
+                } else {
+                    System.out.println("Failure");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                System.out.println("Failure");
+            }
+        });
+
     }
 
     @Override
