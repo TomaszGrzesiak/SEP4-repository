@@ -154,6 +154,9 @@
     <Compile Include="CO2Manager.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="definitions.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="drivers\display_7seg.h">
       <SubType>compile</SubType>
     </Compile>
@@ -296,6 +299,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TemperatureHumidity.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TemperatureHumidity.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
