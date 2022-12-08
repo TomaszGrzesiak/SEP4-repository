@@ -14,7 +14,7 @@
 
 #include <stdio_driver.h>
 #include <serial.h>
-#include "TemperatureHumidity.h"
+#include "TemperatureHumidityManager.h"
 #include "hih8120.h"
 #include "definitions.h"
 
@@ -37,10 +37,10 @@ void temperatureHumiditySensorTask(void* pvParameters){
 		}
 		vTaskDelay(100);
 		printf("task 3 delay 1000");
-		xSemaphoreTake(semaphore, portMAX_DELAY);
+		xSemaphoreTake(xSemaphore, portMAX_DELAY);
 		data.humidity = hih8120_getHumidity();
 		data.temperature = hih8120_getTemperature();
 		printf("Hum: %d  Temp: %d\n", data.humidity, data.temperature);
-		xSemaphoreGive(semaphore);
+		xSemaphoreGive(xSemaphore);
 	}
 }

@@ -301,10 +301,10 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="TemperatureHumidity.h">
+    <Compile Include="TemperatureHumidityManager.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="TemperatureHumidity.c">
+    <Compile Include="TemperatureHumidityManager.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

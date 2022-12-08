@@ -25,6 +25,6 @@ typedef struct programData{
 	
 	programData data;
 	
-	SemaphoreHandle_t semaphore;
+	SemaphoreHandle_t xSemaphore;
 	
-	#endif
+#endif

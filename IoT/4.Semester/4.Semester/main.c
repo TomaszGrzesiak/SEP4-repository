@@ -21,15 +21,13 @@
 #include <status_leds.h>
 
 #include "CO2Manager.h"
-#include "definitions.h"
-#include "TemperatureHumidity.h"
+#include "definitions.h" // contains a semaphore and the current values from the sensors
+#include "TemperatureHumidityManager.h"
 
 // define two Tasks
 void task1( void *pvParameters );
 void task2( void *pvParameters );
 
-// define semaphore handle
-SemaphoreHandle_t xTestSemaphore;
 
 // Prototype for LoRaWAN handler
 void _handler_initialise(UBaseType_t _handler_task_priority);
@@ -40,12 +38,12 @@ void create_tasks_and_semaphores(void)
 	// Semaphores are useful to stop a Task proceeding, where it should be paused to wait,
 	// because it is sharing a resource, such as the Serial port.
 	// Semaphores should only be used whilst the scheduler is running, but we can set it up here.
-	if ( semaphore == NULL )  // Check to confirm that the Semaphore has not already been created.
+	if ( xSemaphore == NULL )  // Check to confirm that the Semaphore has not already been created.
 	{
-		semaphore = xSemaphoreCreateMutex();  // Create a mutex semaphore.
-		if ( ( semaphore ) != NULL )
+		xSemaphore = xSemaphoreCreateMutex();  // Create a mutex semaphore.
+		if ( ( xSemaphore ) != NULL )
 		{
-			xSemaphoreGive( ( semaphore ) );  // Make the mutex available for use, by initially "Giving" the Semaphore.
+			xSemaphoreGive( ( xSemaphore ) );  // Make the mutex available for use, by initially "Giving" the Semaphore.
 		}
 	}
 
@@ -66,8 +64,8 @@ void create_tasks_and_semaphores(void)
 	,  NULL );
 	
 	xTaskCreate(
-	temperatureHumiditySensorTask
-	,  "Task3"  // A name just for humans
+	temperatureHumiditySensorTask // the task body is in TemperatureHumidityManager.c
+	,  "Grabbing temperature and humidity values from the sensors"  // A name just for humans
 	,  configMINIMAL_STACK_SIZE  // This stack size can be checked & adjusted by reading the Stack Highwater
 	,  NULL
 	,  1  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
