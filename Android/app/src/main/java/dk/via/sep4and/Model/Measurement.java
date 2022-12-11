@@ -11,16 +11,20 @@ import lombok.ToString;
 
 
 public class Measurement {
-    @SerializedName("id")
+
     private int id;
-    @SerializedName("co2")
+
     private double co2;
-    @SerializedName("humidity")
+
     private double humidity;
-    @SerializedName("temperature")
+
     private double temperature;
-    @SerializedName("timeStamp")
+
     private LocalDateTime timeStamp;
+
+    public Measurement() {
+
+    }
 
     public Measurement(int id, double co2, double humidity, double temperature, LocalDateTime timeStamp) {
         this.id = id;
