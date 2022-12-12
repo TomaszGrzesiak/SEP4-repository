@@ -55,6 +55,7 @@ Here you you will find the functions you normally will need.
 #define TSL2591_H_
 
 #include <stdbool.h>
+#include <stdint.h>
 
 /**
 \ingroup tsl2591_driver_structs
