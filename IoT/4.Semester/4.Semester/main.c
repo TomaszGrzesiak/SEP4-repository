@@ -1,6 +1,7 @@
 /*
 * main.c
-* Author : IHA
+* Author : Tomasz Grzesiak, Gabriel Moutinho, Rodrigo Valente
+* Based on the example main file including LoRaWAN setup, delivered by IHA.
 *
 * Example main file including LoRaWAN setup
 * Just for inspiration :)
@@ -23,6 +24,8 @@
 #include "CO2Manager.h"
 #include "definitions.h" // contains a semaphore and the current values from the sensors
 #include "TemperatureHumidityManager.h"
+
+
 #include <display_7seg.h> // 7-segment Display Driver. A real display on the IoT device (4 digits only)
 
 // define two Tasks
@@ -32,6 +35,8 @@ void task2( void *pvParameters );
 
 // Prototype for LoRaWAN handler
 void _handler_initialise(UBaseType_t _handler_task_priority);
+void lora_handler_initialise(UBaseType_t lora_handler_task_priority);
+void downlinkHandlerInitialise();
 
 /*-----------------------------------------------------------*/
 void create_tasks_and_semaphores(void)
@@ -48,6 +53,7 @@ void create_tasks_and_semaphores(void)
 		}
 	}
 
+/*	
 	xTaskCreate(
 	task1
 	,  "Task1"  // A name just for humans
@@ -55,6 +61,7 @@ void create_tasks_and_semaphores(void)
 	,  NULL
 	,  2  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
 	,  NULL );
+	*/
 
 	xTaskCreate(
 	task2
@@ -85,7 +92,7 @@ void task1( void *pvParameters )
 	for(;;)
 	{
 		xTaskDelayUntil( &xLastWakeTime, xFrequency );
-		puts("Task1 5 seconds gap."); // stdio functions are not reentrant - Should normally be protected by MUTEX
+			puts("Task1 5 seconds gap."); // stdio functions are not reentrant - Should normally be protected by MUTEX	
 		PORTA ^= _BV(PA0);
 	}
 }
@@ -93,20 +100,32 @@ void task1( void *pvParameters )
 /*-----------------------------------------------------------*/
 void task2( void *pvParameters )
 {
+	/*
 	TickType_t xLastWakeTime;
 	const TickType_t xFrequency = 10000/portTICK_PERIOD_MS; // 10000 ms
 
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
-
-	for(;;)
-	{
-		// CO2 measuring - here, just for testing purposes. Later on we'll find a better place for it.
-		performCO2Measuring();
-		
 		xTaskDelayUntil( &xLastWakeTime, xFrequency );
 		puts("Task2 10 seconds gap"); // stdio functions are not reentrant - Should normally be protected by MUTEX
 		PORTA ^= _BV(PA7);
+	*/
+	
+	for(;;)
+	{
+		// sending a test message with new settings. This wouldn't be necessary, if I could connect to LoRaWaN and use Kasper's GitHub web APi for LoRaWaN. Unfortunately, in my home there is no LoRaWaN covarage :(
+		{
+			static lora_driver_payload_t test_downlink_payload;
+			test_downlink_payload.len = 16; // extending message length to 16 at the Data Team explicit ask for it - so that it is a 16 byte message. Filling unused bytes with zeros.
+			test_downlink_payload.portNo = 99;
+			for (int i=0; i< 16; i++) {
+				test_downlink_payload.bytes[i] = i;
+			}
+			test_downlink_payload.bytes[0] = 43947 >> 8;	
+			xMessageBufferSend(downLinkMessageBufferHandle, &test_downlink_payload, sizeof(lora_driver_payload_t), 500);
+			
+			vTaskDelay(pdMS_TO_TICKS(20000));
+		}
 	}
 }
 
@@ -127,11 +146,12 @@ void initialiseSystem()
 	status_leds_initialise(5); // Priority 5 for internal task
 	
 	// The two lines below are copy-pasted from the official Guide.
-	MessageBufferHandle_t downLinkMessageBufferHandle = xMessageBufferCreate(sizeof(lora_driver_payload_t)*2); // Here I make room for two downlink messages in the message buffer
+	downLinkMessageBufferHandle = xMessageBufferCreate(sizeof(lora_driver_payload_t)*2); // Here I make room for two downlink messages in the message buffer
 	lora_driver_initialise(ser_USART1, downLinkMessageBufferHandle); // The parameter is the USART port the RN2483 module is connected to - in this case USART1 - here no message buffer for down-link messages are defined
+	downlinkHandlerInitialise(1);
 	
 	// Create LoRaWAN task and start it up with priority 3
-	lora_handler_initialise(3, downLinkMessageBufferHandle);
+	lora_handler_initialise(3);
 	
 	// initializing CO2 manager
 	initializeCO2Manager();

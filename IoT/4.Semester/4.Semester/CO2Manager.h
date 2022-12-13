@@ -2,7 +2,7 @@
  * CO2Manager.h
  *
  * Created: 30-11-2022 00:02:36
- *  Author: grzes
+ *  Author: Tomasz Grzesiak
  */ 
 #include <stdint.h>
 

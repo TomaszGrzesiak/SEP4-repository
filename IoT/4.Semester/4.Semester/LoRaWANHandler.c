@@ -2,7 +2,8 @@
 * loraWANHandler.c
 *
 * Created: 12/04/2019 10:09:05
-*  Author: IHA
+* Author: Tomasz, Gabriel
+* The file is based on the example file delivered by: IHA
 */
 #include <stddef.h>
 #include <stdio.h>
@@ -22,22 +23,14 @@ void lora_handler_task( void *pvParameters );
 
 static lora_driver_payload_t _uplink_payload;
 
-// following 3 lines are copy-pasted from The Quick Start Guide in the Ib Havn's GitHub
-lora_driver_payload_t downlinkPayload;
-uint16_t minCO2Setting; // Max Humidity
-uint16_t maxCO2Setting; // Max Temperature
-MessageBufferHandle_t downLinkMessageBufferHandle;
-
-
 // moved here from a for loop in lora_handler_task, so that the 3 fields are more global
 static uint16_t co2_ppm = 0; // unsigned int is always positive 0 to 4294967295
 static uint16_t hum = 0;
 static uint16_t light = 0;
 static int16_t temp = 0; // int16_t (signed int) may be negative -2147483648 to 2147483647
 
-void lora_handler_initialise(UBaseType_t lora_handler_task_priority, MessageBufferHandle_t adhd)
+void lora_handler_initialise(UBaseType_t lora_handler_task_priority)
 {
-	downLinkMessageBufferHandle = adhd;
 	xTaskCreate(
 	lora_handler_task
 	,  "LRHand"  // A name just for humans
@@ -83,8 +76,7 @@ static void _lora_setup(void)
 	
 	do {
 		rc = lora_driver_join(LORA_OTAA);
-		printf("Join Network TriesLeft:%d >%s<\n", maxJoinTriesLeft, lora_driver_mapReturnCodeToText(rc));
-
+			printf("Join Network TriesLeft:%d >%s<\n", maxJoinTriesLeft, lora_driver_mapReturnCodeToText(rc));
 		if ( rc != LORA_ACCEPTED)
 		{
 			// Make the red led pulse to tell something went wrong
@@ -134,7 +126,7 @@ void lora_handler_task( void *pvParameters )
 
 	_lora_setup();
 
-	_uplink_payload.len = 8;
+	_uplink_payload.len = 16; // extending message length to 16 at Hamoudi's explicit ask for it, so that it is a 16 byte message. Filling unused bytes with zeros.
 	_uplink_payload.portNo = 2;
 
 	TickType_t xLastWakeTime;
@@ -147,7 +139,6 @@ void lora_handler_task( void *pvParameters )
 	{
 
 		printf(">> attempting to send and receive data each %d seconds...\n",timeInterval);
-				
 		// Some dummy payload
 		hum = data.humidity;
 		temp = data.temperature;
@@ -163,21 +154,14 @@ void lora_handler_task( void *pvParameters )
 		_uplink_payload.bytes[5] = co2_ppm & 0xFF;
 		_uplink_payload.bytes[6] = light >> 8;
 		_uplink_payload.bytes[7] = light & 0xFF;
+		for (int i=8; i< 16; i++) { // extending message length to 16 at Hamoudi's explicit ask for it, so that it is a 16 byte message instead of 8 byte. Filling unused bytes with zeros.
+			_uplink_payload.bytes[i] = 0x00;
+		}
 
 		status_leds_shortPuls(led_ST4);  // OPTIONAL
 		printf("Upload Message >%s<\n", lora_driver_mapReturnCodeToText(lora_driver_sendUploadMessage(false, &_uplink_payload)));
+		// handling the downlink message has been moved to downlinkHandler.c
 		
-		xMessageBufferReceive(downLinkMessageBufferHandle, &downlinkPayload, sizeof(lora_driver_payload_t), pdMS_TO_TICKS(2500));
-		printf("DOWN LINK: from port: %d with %d bytes received!\n", downlinkPayload.portNo, downlinkPayload.len); // Just for Debug
-		
-		
-		if (4 == downlinkPayload.len) // Check that we have got the expected 4 bytes
-		{
-			// decode the payload into our variables
-			minCO2Setting = (downlinkPayload.bytes[0] << 8) + downlinkPayload.bytes[1];
-			maxCO2Setting = (downlinkPayload.bytes[2] << 8) + downlinkPayload.bytes[3];
-			printf("DOWN LINK first 2 bytes: %d, and the other 2 bytes: %d\n", minCO2Setting, maxCO2Setting); // Just for Debug
-		}
 		
 		xTaskDelayUntil( &xLastWakeTime, xFrequency );
 	}
