@@ -118,13 +118,20 @@ void task2( void *pvParameters )
 			static lora_driver_payload_t test_downlink_payload;
 			test_downlink_payload.len = 16; // extending message length to 16 at the Data Team explicit ask for it - so that it is a 16 byte message. Filling unused bytes with zeros.
 			test_downlink_payload.portNo = 99;
-			for (int i=0; i< 16; i++) {
-				test_downlink_payload.bytes[i] = i;
+			
+			for (uint16_t i=4; i< 16; i=i+2) {
+				test_downlink_payload.bytes[i] = i >> 8;
+				test_downlink_payload.bytes[i+1] = i & 0xFF;
 			}
-			test_downlink_payload.bytes[0] = 43947 >> 8;	
+			static uint16_t minCO2Setting = 3000;
+			static uint16_t maxCO2Setting = 8000;
+			test_downlink_payload.bytes[0] = minCO2Setting >> 8;
+			test_downlink_payload.bytes[1] = minCO2Setting & 0xFF;
+			test_downlink_payload.bytes[2] = maxCO2Setting >> 8;
+			test_downlink_payload.bytes[3] = maxCO2Setting & 0xFF;
 			xMessageBufferSend(downLinkMessageBufferHandle, &test_downlink_payload, sizeof(lora_driver_payload_t), 500);
 			
-			vTaskDelay(pdMS_TO_TICKS(20000));
+			vTaskDelay(pdMS_TO_TICKS(8000));
 		}
 	}
 }

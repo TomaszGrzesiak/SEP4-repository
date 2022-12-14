@@ -16,7 +16,7 @@ static lora_driver_payload_t downlinkPayload1;
 void receiveNewMessageFromLoRaWaN( void *pvParameters );
 
 void downlinkHandlerInitialise(UBaseType_t lora_handler_task_priority)
-{
+{	
 	xTaskCreate(
 	receiveNewMessageFromLoRaWaN // the task body is in downlinkHandler.c
 	,  "Handling new messages from LoRaWaN"  // A name just for humans
@@ -46,7 +46,7 @@ void receiveNewMessageFromLoRaWaN( void *pvParameters )
 			data.minLightSetting = (downlinkPayload1.bytes[12] << 8) + downlinkPayload1.bytes[13];
 			data.maxLightSetting = (downlinkPayload1.bytes[14] << 8) + downlinkPayload1.bytes[15];
 			// printing the received values
-			printf("Received settings: %d, %d, %d, %d, %d, %d, %d, %d\n",data.minCO2Setting,data.maxCO2Setting,data.minHumiditySetting,data.maxHumiditySetting,data.minTemperatureSetting,data.maxTemperatureSetting,data.minLightSetting,data.maxLightSetting);
+			printf("Received settings: %d, %d, %d, %d, %d, %d, %d, %d\n",data.minCO2Setting,data.maxCO2Setting,data.minHumiditySetting,data.maxHumiditySetting,data.minTemperatureSetting,data.maxTemperatureSetting,data.minLightSetting,data.maxLightSetting);		
 			
 			// apperently, if a printf function has too long argument, it crashes all the program entirely, blocking even higher priority tasks, like lora_handler_task();
 			// printf("Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections. \n");
