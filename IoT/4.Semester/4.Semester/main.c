@@ -113,8 +113,9 @@ void task2( void *pvParameters )
 	
 	for(;;)
 	{
-		// sending a test message with new settings. This wouldn't be necessary, if I could connect to LoRaWaN and use Kasper's GitHub web APi for LoRaWaN. Unfortunately, in my home there is no LoRaWaN covarage :(
 		{
+			/*
+			// sending a test message with new settings. This wouldn't be necessary, if I could connect to LoRaWaN and use Kasper's GitHub web APi for LoRaWaN. Unfortunately, in my home there is no LoRaWaN covarage :(		
 			static lora_driver_payload_t test_downlink_payload;
 			test_downlink_payload.len = 16; // extending message length to 16 at the Data Team explicit ask for it - so that it is a 16 byte message. Filling unused bytes with zeros.
 			test_downlink_payload.portNo = 99;
@@ -130,6 +131,7 @@ void task2( void *pvParameters )
 			test_downlink_payload.bytes[2] = maxCO2Setting >> 8;
 			test_downlink_payload.bytes[3] = maxCO2Setting & 0xFF;
 			xMessageBufferSend(downLinkMessageBufferHandle, &test_downlink_payload, sizeof(lora_driver_payload_t), 500);
+			*/
 			
 			vTaskDelay(pdMS_TO_TICKS(8000));
 		}
