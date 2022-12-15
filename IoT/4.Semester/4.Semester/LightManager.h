@@ -22,14 +22,15 @@ typedef struct lightSensor
 typedef struct lightSensor* lightSensor_t;
 lightSensor_t self;
 
-lightSensor_t lightSensor_init();   /* Initialize light sensor */
+lightSensor_t lightSensor_init();   
 
-void lightMeasure(lightSensor_t self);   /* Preform measuring of light level */
-void callback(tsl2591_returnCode_t rc);
+void lightMeasure(lightSensor_t self);  
 
-uint32_t getLux(lightSensor_t self);   /* Return latest lux value */
-//uint16_t getVisibleRaw(lightSensor_t self);   /* Return latest visible light */
-//uint16_t getInfraredRaw(lightSensor_t self);   /* Return latest infrared raw light */
-//uint16_t getFullSpectrum(lightSensor_t self);   /* Return latest full spectrum light */
+void tsl2591Callback(tsl2591_returnCode_t returnCode, lightSensor_t self)
+
+uint32_t getLux(lightSensor_t self);   
+uint16_t getVisibleRaw(lightSensor_t self);   
+uint16_t getInfraredRaw(lightSensor_t self);  
+uint16_t getFullSpectrum(lightSensor_t self); 
 
 void lightSensorTask(void* pvParameters);
