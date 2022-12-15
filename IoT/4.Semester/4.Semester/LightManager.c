@@ -24,7 +24,7 @@ lightSensor_t lightSensor_init()
 {
 	lightSensor_t newSensor = calloc(1, sizeof(lightSensor));
 	
-	tsl2591_returnCode_t returnCode = tsl2591_initialise(callback(NULL, newSensor));
+	tsl2591_returnCode_t returnCode = tsl2591_initialise(tsl2591Callback(NULL, newSensor));
 	
 	if (returnCode == TSL2591_OK)
 	{
@@ -38,7 +38,7 @@ lightSensor_t lightSensor_init()
 			return NULL;
 		}
 		
-		newSensor = callback(returnCode, newSensor);
+		newSensor = tsl2591Callback(returnCode, newSensor);
 	}
 	else
 	{
@@ -54,7 +54,7 @@ void lightMeasure(lightSensor_t self)
 	
 	if (returnCode == TSL2591_OK)
 	{
-		callback(TSL2591_DATA_READY, self);
+		tsl2591Callback(TSL2591_DATA_READY, self);
 	}
 	else
 	{
@@ -167,7 +167,7 @@ static void decreaseTime()
 	setGainAndIntegrationTime(gain, time);
 }
 
-void callback(tsl2591_returnCode_t returnCode, lightSensor_t self)
+void tsl2591Callback(tsl2591_returnCode_t returnCode, lightSensor_t self)
 {
 	uint16_t _tmp;
 	float _lux;
@@ -184,14 +184,14 @@ void callback(tsl2591_returnCode_t returnCode, lightSensor_t self)
 			decreaseGain();
 			decreaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Visible overflow - decrease gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
 		else if (returnCode == TSL2591_UNDERFLOW)
 		{
 			increaseGain();
 			increaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Visible underflow - increase gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
 		else
 		{
@@ -208,14 +208,14 @@ void callback(tsl2591_returnCode_t returnCode, lightSensor_t self)
 			decreaseGain();
 			decreaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Full spectrum overflow - change gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
 		else if (returnCode == TSL2591_UNDERFLOW)
 		{
 			increaseGain();
 			increaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Full spectrum overflow - increase gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
 		else
 		{
@@ -232,16 +232,16 @@ void callback(tsl2591_returnCode_t returnCode, lightSensor_t self)
 			decreaseGain();
 			decreaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Infrared overflow - decrease gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
 		else if (returnCode == TSL2591_UNDERFLOW)
 		{
 			increaseGain();
 			increaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Infrared underflow - increase gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
-		else 
+		else
 		{
 			printf("\nTSL25911_LIGHT_SENSOR_ERROR infra: %d\n", returnCode);
 		}
@@ -256,14 +256,14 @@ void callback(tsl2591_returnCode_t returnCode, lightSensor_t self)
 			decreaseGain();
 			decreaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Visible overflow - decrease gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
 		else if (returnCode == TSL2591_UNDERFLOW)
 		{
 			increaseGain();
 			increaseTime();
 			printf("\nTSL25911_LIGHT_SENSOR: Visible underflow - increase gain and integration time\n");
-			callback(TSL2591_DATA_READY, self);
+			tsl2591Callback(TSL2591_DATA_READY, self);
 		}
 		else
 		{
