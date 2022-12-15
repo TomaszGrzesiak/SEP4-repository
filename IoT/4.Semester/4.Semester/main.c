@@ -29,10 +29,7 @@
 
 #include <display_7seg.h> // 7-segment Display Driver. A real display on the IoT device (4 digits only)
 
-// define two Tasks
-void task1( void *pvParameters );
-void task2( void *pvParameters );
-
+void taskForTesting( void *pvParameters );
 
 // Prototype for LoRaWAN handler
 void _handler_initialise(UBaseType_t _handler_task_priority);
@@ -54,19 +51,9 @@ void create_tasks_and_semaphores(void)
 		}
 	}
 
-/*	
 	xTaskCreate(
-	task1
-	,  "Task1"  // A name just for humans
-	,  configMINIMAL_STACK_SIZE  // This stack size can be checked & adjusted by reading the Stack Highwater
-	,  NULL
-	,  2  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-	,  NULL );
-	*/
-
-	xTaskCreate(
-	task2
-	,  "Task2"  // A name just for humans
+	taskForTesting
+	,  "taskForTesting"  // A name just for humans
 	,  configMINIMAL_STACK_SIZE  // This stack size can be checked & adjusted by reading the Stack Highwater
 	,  NULL
 	,  1  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
@@ -89,26 +76,12 @@ void create_tasks_and_semaphores(void)
 	,  NULL );
 }
 
-/*-----------------------------------------------------------*/
-void task1( void *pvParameters )
-{
-	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 5000/portTICK_PERIOD_MS; // 5000 ms
-
-	// Initialise the xLastWakeTime variable with the current time.
-	xLastWakeTime = xTaskGetTickCount();
-
-	for(;;)
-	{
-		xTaskDelayUntil( &xLastWakeTime, xFrequency );
-			puts("Task1 5 seconds gap."); // stdio functions are not reentrant - Should normally be protected by MUTEX	
-		PORTA ^= _BV(PA0);
-	}
-}
 
 /*-----------------------------------------------------------*/
-void task2( void *pvParameters )
+void taskForTesting( void *pvParameters )
 {
+	// this task is made for simulate receiving new settings from Data Server
+	
 	/*
 	TickType_t xLastWakeTime;
 	const TickType_t xFrequency = 10000/portTICK_PERIOD_MS; // 10000 ms
@@ -116,14 +89,14 @@ void task2( void *pvParameters )
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
 		xTaskDelayUntil( &xLastWakeTime, xFrequency );
-		puts("Task2 10 seconds gap"); // stdio functions are not reentrant - Should normally be protected by MUTEX
+		puts("taskForTesting 10 seconds gap"); // stdio functions are not reentrant - Should normally be protected by MUTEX
 		PORTA ^= _BV(PA7);
-	*/
+*/
 	
 	for(;;)
 	{
 		{
-			/*
+	/*		
 			// sending a test message with new settings. This wouldn't be necessary, if I could connect to LoRaWaN and use Kasper's GitHub web APi for LoRaWaN. Unfortunately, in my home there is no LoRaWaN covarage :(		
 			static lora_driver_payload_t test_downlink_payload;
 			test_downlink_payload.len = 16; // extending message length to 16 at the Data Team explicit ask for it - so that it is a 16 byte message. Filling unused bytes with zeros.
@@ -140,7 +113,7 @@ void task2( void *pvParameters )
 			test_downlink_payload.bytes[2] = maxCO2Setting >> 8;
 			test_downlink_payload.bytes[3] = maxCO2Setting & 0xFF;
 			xMessageBufferSend(downLinkMessageBufferHandle, &test_downlink_payload, sizeof(lora_driver_payload_t), 500);
-			*/
+		*/	
 			
 			vTaskDelay(pdMS_TO_TICKS(8000));
 		}
