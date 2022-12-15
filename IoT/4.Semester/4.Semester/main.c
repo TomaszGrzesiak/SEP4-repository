@@ -23,6 +23,7 @@
 #include "CO2Manager.h"
 #include "definitions.h" // contains a semaphore and the current values from the sensors
 #include "TemperatureHumidityManager.h"
+#include "LightManager.h"
 #include <display_7seg.h> // 7-segment Display Driver. A real display on the IoT device (4 digits only)
 
 // define two Tasks
@@ -68,6 +69,14 @@ void create_tasks_and_semaphores(void)
 	temperatureHumiditySensorTask // the task body is in TemperatureHumidityManager.c
 	,  "Grabbing temperature and humidity values from the sensors"  // A name just for humans
 	,  configMINIMAL_STACK_SIZE  // This stack size can be checked & adjusted by reading the Stack Highwater
+	,  NULL
+	,  1  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+	,  NULL );
+	
+	xTaskCreate(
+	lightSensorTask 
+	,  "Grabbing light values from the sensor" 
+	,  configMINIMAL_STACK_SIZE 
 	,  NULL
 	,  1  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
 	,  NULL );
@@ -146,6 +155,12 @@ void initialiseSystem()
        // Driver initialised OK
        // Always check what hih8120_initialise() returns
 	}
+	
+	if ( TSL2591_OK == tsl2591_initialise(callback) )
+{
+	// Driver initilised OK
+	// Always check what tsl2591_initialise() returns
+}
 }
 
 /*-----------------------------------------------------------*/

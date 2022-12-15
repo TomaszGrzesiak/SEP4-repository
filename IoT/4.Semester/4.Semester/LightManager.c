@@ -10,6 +10,15 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "definitions.h"
+#include <avr/io.h>
+
+#include <ATMEGA_FreeRTOS.h>
+#include <task.h>
+#include <semphr.h>
+
+#include <stdio_driver.h>
+#include <serial.h>
 
 lightSensor_t lightSensor_init()
 {
@@ -293,5 +302,18 @@ uint16_t getInfraredRaw( lightSensor_t self)
 uint16_t getFullSpectrum( lightSensor_t self) 
 {
 	return self->fullSpectrum;
+}
+
+void lightSensorTask(void* pvParameters)
+{
+	while(1)
+	{
+		vTaskDelay(1000);
+		getLux(self);
+		xSemaphoreTake(xSemaphore, portMAX_DELAY);
+		data.light=self->lux;
+		printf("Task 4 lux = %d", data.light);
+		xSemaphoreGive(xSemaphore);
+	}
 }
 

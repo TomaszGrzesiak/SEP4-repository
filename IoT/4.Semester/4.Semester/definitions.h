@@ -22,6 +22,7 @@ typedef struct programData{
 	int16_t temperature; // int16 is from -32000 to + 32000
 	uint16_t humidity; // uint16 is from 0 65000. CIRKA :)
 	uint16_t CO2level;
+	uint16_t light;
 	}programData;
 	
 	programData data;
