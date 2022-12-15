@@ -36,7 +36,7 @@ void temperatureHumiditySensorTask(void* pvParameters){
 
 		}
 		vTaskDelay(100);
-		printf("task 3 delay 1000");
+		printf("task 3 delay 1000\n");
 		xSemaphoreTake(xSemaphore, portMAX_DELAY);
 		data.humidity = hih8120_getHumidity();
 		data.temperature = hih8120_getTemperature();
