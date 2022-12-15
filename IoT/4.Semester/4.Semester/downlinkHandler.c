@@ -36,6 +36,7 @@ void receiveNewMessageFromLoRaWaN( void *pvParameters )
 			printf("DOWN LINK: from port: %d with %d bytes received!\n", downlinkPayload1.portNo, downlinkPayload1.len);
 		if (16 == downlinkPayload1.len) // Check that we have got the expected message
 		{
+			xSemaphoreTake(xSemaphore, 500);
 			// decode the payload into our variables
 			data.minCO2Setting = (downlinkPayload1.bytes[0] << 8) + downlinkPayload1.bytes[1];
 			data.maxCO2Setting = (downlinkPayload1.bytes[2] << 8) + downlinkPayload1.bytes[3];
@@ -47,6 +48,7 @@ void receiveNewMessageFromLoRaWaN( void *pvParameters )
 			data.maxLightSetting = (downlinkPayload1.bytes[14] << 8) + downlinkPayload1.bytes[15];
 			// printing the received values
 			printf("Received settings: %d, %d, %d, %d, %d, %d, %d, %d\n",data.minCO2Setting,data.maxCO2Setting,data.minHumiditySetting,data.maxHumiditySetting,data.minTemperatureSetting,data.maxTemperatureSetting,data.minLightSetting,data.maxLightSetting);		
+			xSemaphoreGive(xSemaphore);
 			
 			// apperently, if a printf function has too long argument, it crashes all the program entirely, blocking even higher priority tasks, like lora_handler_task();
 			// printf("Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections. \n");

@@ -23,7 +23,9 @@ static uint16_t calculateBagActuatorPosition();
 
 void myCo2CallBack(uint16_t ppm)
 {
+	xSemaphoreTake(xSemaphore, 500);
 	data.CO2level = ppm;
+	xSemaphoreGive(xSemaphore);
 }
 
 void initializeCO2Manager() {
@@ -48,11 +50,16 @@ void performCO2Measuring_task(void *pvParameters) {
 		rc = mh_z19_takeMeassuring();
 		if (rc != MHZ19_OK)
 		{
-			printf("CO2 Sensor readings: something went wrong.\n");
+				xSemaphoreTake(xSemaphore, 500);
+					printf("CO2 Sensor readings: something went wrong.\n");
+				xSemaphoreGive(xSemaphore);
+			
 		}
 		else
 		{
+			xSemaphoreTake(xSemaphore, 500);
 			printf("CO2 Sensor readings: %d\n",data.CO2level);
+			xSemaphoreGive(xSemaphore);
 		}
 		servoEmulatorSetPosition(servoEmulatorVentilator, calculateVentilatorPosition());			
 		
@@ -62,11 +69,19 @@ void performCO2Measuring_task(void *pvParameters) {
 }
 
 static uint16_t calculateVentilatorPosition() {
-	if (data.CO2level < data.maxCO2Setting) return 0; // ventilator shall remain closed, because the current level is below the maximum threshold. <- the mushroom farm does not need any fresh air. The CO2 level is not too high.
-	return (100*(data.CO2level-data.maxCO2Setting)/data.CO2level);
+	int result;
+	xSemaphoreTake(xSemaphore, 500);
+	if (data.CO2level < data.maxCO2Setting) result = 0; // ventilator shall remain closed, because the current level is below the maximum threshold. <- the mushroom farm does not need any fresh air. The CO2 level is not too high.
+	result = (100*(data.CO2level-data.maxCO2Setting)/data.CO2level);
+	xSemaphoreGive(xSemaphore);
+	return result;
 }
 
 static uint16_t calculateBagActuatorPosition() {
-	if (data.CO2level > data.minCO2Setting) return 0; // the CO2 bag shall remain closed, because the current level is higher the minimum threshold. <- the mushroom farm does not need any extra CO2.
-	return (100*(data.minCO2Setting-data.CO2level)/data.minCO2Setting);
+	int result;
+	xSemaphoreTake(xSemaphore, 500);
+	if (data.CO2level > data.minCO2Setting) result = 0; // the CO2 bag shall remain closed, because the current level is higher the minimum threshold. <- the mushroom farm does not need any extra CO2.
+	result = (100*(data.minCO2Setting-data.CO2level)/data.minCO2Setting);
+	xSemaphoreGive(xSemaphore);
+	return result;	
 }
