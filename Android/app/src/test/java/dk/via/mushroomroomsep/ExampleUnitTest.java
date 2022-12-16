@@ -1,4 +1,4 @@
-package dk.via.sep4and;
+package dk.via.mushroomroomsep;
 
 import org.junit.Test;
 

@@ -1,18 +1,10 @@
-package dk.via.sep4and.Model;
-
-import com.google.gson.annotations.SerializedName;
+package dk.via.mushroomroomsep.model;
 
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-
 public class Measurement {
 
-    private int id;
+    private int measureId;
 
     private double co2;
 
@@ -20,22 +12,25 @@ public class Measurement {
 
     private double temperature;
 
-    private LocalDateTime timeStamp;
+    private double lightLevel;
+
+    private LocalDateTime timestamp;
 
     public Measurement() {
 
     }
 
-    public Measurement(int id, double co2, double humidity, double temperature, LocalDateTime timeStamp) {
-        this.id = id;
+    public Measurement(int id, double co2, double humidity, double temperature, double lightLevel, LocalDateTime timeStamp) {
+        this.measureId = id;
         this.co2 = co2;
         this.humidity = humidity;
         this.temperature = temperature;
-        this.timeStamp = timeStamp;
+        this.lightLevel = lightLevel;
+        this.timestamp = timeStamp;
     }
 
     public int getId(){
-        return id;
+        return measureId;
     }
 
     public double getCo2() {
@@ -51,7 +46,12 @@ public class Measurement {
     }
 
     public LocalDateTime getTimeStamp() {
-        return timeStamp;
+        return timestamp;
+    }
+
+    public double getLightLevel() {
+        return lightLevel;
     }
 }
+
 

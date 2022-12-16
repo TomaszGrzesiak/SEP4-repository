@@ -1,4 +1,4 @@
-package dk.via.sep4and;
+package dk.via.mushroomroomsep;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("dk.via.sep4and", appContext.getPackageName());
+        assertEquals("com.example.mushroomroomsep", appContext.getPackageName());
     }
 }
