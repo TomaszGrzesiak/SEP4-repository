@@ -126,7 +126,7 @@ void lora_handler_task( void *pvParameters )
 
 	_lora_setup();
 
-	_uplink_payload.len = 16; // extending message length to 16 at Hamoudi's explicit ask for it, so that it is a 16 byte message. Filling unused bytes with zeros.
+	_uplink_payload.len = 16; // extending message length to 16 at the Data Server Team's explicit ask for it, so that it is a 16 byte message instead of 8 byte. Filling unused bytes with zeros.
 	_uplink_payload.portNo = 2;
 
 	TickType_t xLastWakeTime;
@@ -139,11 +139,10 @@ void lora_handler_task( void *pvParameters )
 	{
 
 		printf(">> attempting to send and receive data each %d seconds...\n",timeInterval);
-		// Some dummy payload
 		hum = data.humidity;
 		temp = data.temperature;
-		co2_ppm = data.CO2level; // no longer so dummy CO2
-		light = 43947; // Dummy light HEX: ABAB
+		co2_ppm = data.CO2level;
+		light = data.light; 
 		
 
 		_uplink_payload.bytes[0] = hum >> 8;
@@ -154,7 +153,7 @@ void lora_handler_task( void *pvParameters )
 		_uplink_payload.bytes[5] = co2_ppm & 0xFF;
 		_uplink_payload.bytes[6] = light >> 8;
 		_uplink_payload.bytes[7] = light & 0xFF;
-		for (int i=8; i< 16; i++) { // extending message length to 16 at Hamoudi's explicit ask for it, so that it is a 16 byte message instead of 8 byte. Filling unused bytes with zeros.
+		for (int i=8; i< 16; i++) { // extending message length to 16 at the Data Server Team's explicit ask for it, so that it is a 16 byte message instead of 8 byte. Filling unused bytes with zeros.
 			_uplink_payload.bytes[i] = 0x00;
 		}
 

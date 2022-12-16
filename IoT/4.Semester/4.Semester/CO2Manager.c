@@ -50,19 +50,13 @@ void performCO2Measuring_task(void *pvParameters) {
 		rc = mh_z19_takeMeassuring();
 		if (rc != MHZ19_OK)
 		{
-				xSemaphoreTake(xSemaphore, 500);
-					printf("CO2 Sensor readings: something went wrong.\n");
-				xSemaphoreGive(xSemaphore);
-			
+			printf("CO2 Sensor readings: something went wrong.\n");
 		}
 		else
 		{
-			xSemaphoreTake(xSemaphore, 500);
 			printf("CO2 Sensor readings: %d\n",data.CO2level);
-			xSemaphoreGive(xSemaphore);
 		}
 		servoEmulatorSetPosition(servoEmulatorVentilator, calculateVentilatorPosition());			
-		
 		rc_servo_setPosition(0, calculateBagActuatorPosition());
 		vTaskDelay(pdMS_TO_TICKS(3000));
 	}
